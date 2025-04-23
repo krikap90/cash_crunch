@@ -1,18 +1,19 @@
 # CashCrunch
 
-To start your Phoenix server:
+CashCrunch is a elixir application used to visualize revenues and expenses.
+It is very tailormade for my personal needs, but could be a good example app to play around with the following things:
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+- phoenix
+- salad ui
+- charts.js
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Steps to use it
 
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+- `ecto.create`
+- `ecto.migrate`
+- Start application
+- Register new user 
+- Login
+- Add revenues and expenses
+- Play around
