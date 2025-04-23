@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" class="[scrollbar-gutter:stable]">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title default="CashCrunch">
+      {assigns[:page_title]}
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+  <body class="bg-white">
+    <div class="flex min-h-screen w-full flex-col bg-muted/40">
+      <aside class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
+        <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
+          <.link
+            href="/"
+            class="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
+          >
+            <Lucideicons.badge_euro class="h-4 w-4 transition-all group-hover:scale-110" />
+          </.link>
+          <%= if @current_user do %>
+            <.tooltip>
+              <tooltip_trigger>
+                <% class = if "@current_path" == "/" do "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8" else "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8" end %>
+                <.link
+                  href="/"
+                  class={class}
+                >
+                  <Lucideicons.list_ordered class="h-5 w-5" />
+                  <span class="sr-only">
+                    Dashboard
+                  </span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">
+                Dashboard
+              </.tooltip_content>
+            </.tooltip>
+            <.tooltip>
+              <tooltip_trigger>
+                <% class = if "@current_path" == "/overview" do "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8" else "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8" end %>
+                <.link
+                  href="/overview"
+                  class={class}
+                >
+                  <Lucideicons.chart_line class="h-5 w-5" />
+                  <span class="sr-only">
+                    Jahresüberblick
+                  </span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">
+                Jahresüberblick
+              </.tooltip_content>
+            </.tooltip>
+          <% end %>
+        </nav>
+        <nav class="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+          <%= if @current_user do %>
+            <.tooltip>
+              <tooltip_trigger>
+                <.link
+                  href={~p"/users/settings"}
+                  class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Lucideicons.settings class="h-5 w-5" />
+                  <span class="sr-only">
+                    Einstellungen
+                  </span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">
+                Einstellungen
+              </.tooltip_content>
+            </.tooltip>
+            <.tooltip>
+              <tooltip_trigger>
+                <.link
+                  href={~p"/users/log_out"}
+                  method="delete"
+                  class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Lucideicons.log_out class="h-5 w-5" />
+                  <span class="sr-only">
+                    Log out
+                  </span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">
+                Log out
+              </.tooltip_content>
+            </.tooltip>
+          <% else %>
+            <.tooltip>
+              <tooltip_trigger>
+                <.link
+                  href={~p"/users/register"}
+                  class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Lucideicons.user_plus class="h-5 w-5" />
+                  <span class="sr-only">
+                    User erstellen
+                  </span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">
+                User erstellen
+              </.tooltip_content>
+            </.tooltip>
+            <.tooltip>
+              <tooltip_trigger>
+                <.link
+                  href={~p"/users/log_in"}
+                  class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Lucideicons.log_in class="h-5 w-5" />
+                  <span class="sr-only">
+                    Log in
+                  </span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">
+                Log in
+              </.tooltip_content>
+            </.tooltip>
+          <% end %>
+        </nav>
+      </aside>
+      <.flash_group flash={@flash} />
+      {@inner_content}
+    </div>
+  </body>
+</html>
