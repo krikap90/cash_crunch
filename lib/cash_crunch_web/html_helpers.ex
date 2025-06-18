@@ -102,8 +102,8 @@ defmodule CashCrunchWeb.HtmlHelpers do
 
   def to_rgb(value) do
     cond do
-      value <= 1000 -> "color: rgb(270,0,0);"
-      value >= 2000 -> "color: rgb(0,170,0);"
+      value <= 0 -> "color: rgb(270,0,0);"
+      value >= 1000 -> "color: rgb(0,170,0);"
       true -> "color: rgb(0,0,0);"
     end
   end
