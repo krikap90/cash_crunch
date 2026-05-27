@@ -57,18 +57,151 @@ hooks.ChartJS =  {
     const chart = new Chart(ctx, data);
     this.el.chart = chart
 
-    this.handleEvent("update-datasets", function(payload){ 
+    this.handleEvent("update-datasets", function(payload){
       const id = payload.relevant_id
       const chartObject = document.getElementById(id);
       chartObject.chart.data.datasets = JSON.parse(payload.datasets);
       chartObject.chart.update();
     })
    },
-    updated() { 
+    updated() {
      this.el.chart.data.datasets = this.dataset()
      this.el.chart.options = this.options()
    }
  }
+
+hooks.BarChartJS = {
+  mounted() {
+    const ctx = this.el;
+    const labels = JSON.parse(this.el.dataset.labels);
+    const values = JSON.parse(this.el.dataset.values);
+    const colors = JSON.parse(this.el.dataset.colors);
+
+    const data = {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderColor: colors.map(c => c.replace('0.7', '1')),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    };
+
+    const chart = new Chart(ctx, data);
+    this.el.chart = chart;
+
+    this.handleEvent("update-bar-chart", (payload) => {
+      this.el.chart.data.labels = JSON.parse(payload.labels);
+      this.el.chart.data.datasets[0].data = JSON.parse(payload.values);
+      this.el.chart.data.datasets[0].backgroundColor = JSON.parse(payload.colors);
+      this.el.chart.update();
+    });
+  }
+}
+
+hooks.StackedBarChartJS = {
+  mounted() {
+    const ctx = this.el;
+    const labels = JSON.parse(this.el.dataset.labels);
+    const datasets = JSON.parse(this.el.dataset.datasets);
+
+    const data = {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom'
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: {
+              offset: true
+            }
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    };
+
+    const chart = new Chart(ctx, data);
+    this.el.chart = chart;
+
+    this.handleEvent("update-stacked-bar-chart", (payload) => {
+      this.el.chart.data.labels = JSON.parse(payload.labels);
+      this.el.chart.data.datasets = JSON.parse(payload.datasets);
+      this.el.chart.update();
+    });
+  }
+}
+
+hooks.LineChartJS = {
+  mounted() {
+    const ctx = this.el;
+    const labels = JSON.parse(this.el.dataset.labels);
+    const datasets = JSON.parse(this.el.dataset.datasets);
+
+    const data = {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    };
+
+    const chart = new Chart(ctx, data);
+    this.el.chart = chart;
+
+    this.handleEvent("update-line-chart", (payload) => {
+      this.el.chart.data.labels = JSON.parse(payload.labels);
+      this.el.chart.data.datasets = JSON.parse(payload.datasets);
+      this.el.chart.update();
+    });
+  }
+}
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {

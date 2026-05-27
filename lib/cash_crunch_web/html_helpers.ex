@@ -1,6 +1,4 @@
 defmodule CashCrunchWeb.HtmlHelpers do
-  alias CashCrunch.Domain.Expense, as: ExpenseDomain
-
   def format(nil), do: "---"
 
   def format(float) when is_float(float),
@@ -10,6 +8,10 @@ defmodule CashCrunchWeb.HtmlHelpers do
     with {:ok, string_date} <- Timex.format(datetime, "%Y-%m-%d", :strftime) do
       string_date
     end
+  end
+
+  def format(date = %Date{}) do
+    Calendar.strftime(date, "%d.%m.%Y")
   end
 
   # Format für die neue Domain.Expense Struktur

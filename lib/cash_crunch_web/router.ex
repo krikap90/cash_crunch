@@ -18,13 +18,15 @@ defmodule CashCrunchWeb.Router do
   end
 
   scope "/", CashCrunchWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
 
     on_mount = [CashCrunchWeb.Pipelines]
 
     live_session :default, on_mount: on_mount do
       live("/", HomeLive)
       live("/overview", OverviewLive)
+      live("/transactions", TransactionsLive)
+      live("/transaction-groups", TransactionGroupsLive)
     end
   end
 

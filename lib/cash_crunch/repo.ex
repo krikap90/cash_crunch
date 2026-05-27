@@ -2,8 +2,11 @@ defmodule CashCrunch.Repo do
   use Ecto.Repo, otp_app: :cash_crunch, adapter: Ecto.Adapters.SQLite3
 
   alias CashCrunch.Domain.Expense, as: ExpenseDomain
+  alias CashCrunch.Domain.BankTransaction, as: BankTransactionDomain
   alias CashCrunch.Schema.Expense, as: ExpenseSchema
   alias CashCrunch.Schema.RealSaving, as: RealSavingSchema
+  alias CashCrunch.Schema.BankTransaction, as: BankTransactionSchema
+  alias CashCrunch.Schema.TransactionCategoryOverride, as: OverrideSchema
 
   alias CashCrunch.Repo
 
@@ -96,5 +99,162 @@ defmodule CashCrunch.Repo do
 
       acc |> Map.put({struct.datetime.year, struct.datetime.month}, struct)
     end)
+  end
+
+  # Bank Transaction functions
+
+  def get_all_bank_transactions() do
+    from(bt in BankTransactionSchema, order_by: [desc: bt.buchungsdatum])
+    |> Repo.all()
+    |> Enum.map(&BankTransactionSchema.to_struct/1)
+  end
+
+  def get_bank_transactions_in_range(start_date, end_date) do
+    from(bt in BankTransactionSchema,
+      where: bt.buchungsdatum >= ^start_date and bt.buchungsdatum <= ^end_date,
+      order_by: [desc: bt.buchungsdatum]
+    )
+    |> Repo.all()
+    |> Enum.map(&BankTransactionSchema.to_struct/1)
+  end
+
+  def insert_bank_transaction(%BankTransactionDomain{} = transaction) do
+    changeset = BankTransactionSchema.changeset(transaction)
+
+    case Repo.insert(changeset) do
+      {:ok, schema} -> {:ok, BankTransactionSchema.to_struct(schema)}
+      error -> error
+    end
+  end
+
+  def transaction_exists?(%BankTransactionDomain{} = tx) do
+    from(bt in BankTransactionSchema,
+      where:
+        bt.buchungsdatum == ^tx.buchungsdatum and
+          bt.zahlungsempfaenger == ^tx.zahlungsempfaenger and
+          bt.verwendungszweck == ^tx.verwendungszweck and
+          bt.betrag == ^tx.betrag and
+          bt.umsatztyp == ^tx.umsatztyp,
+      select: count(bt.id)
+    )
+    |> Repo.one()
+    |> Kernel.>(0)
+  end
+
+  def insert_bank_transaction_if_new(%BankTransactionDomain{} = transaction) do
+    if transaction_exists?(transaction) do
+      {:skipped, :duplicate}
+    else
+      insert_bank_transaction(transaction)
+    end
+  end
+
+  def get_bank_transactions_after(date) do
+    from(bt in BankTransactionSchema,
+      where: bt.buchungsdatum > ^date,
+      order_by: [desc: bt.buchungsdatum]
+    )
+    |> Repo.all()
+    |> Enum.map(&BankTransactionSchema.to_struct/1)
+  end
+
+  def clear_bank_transactions() do
+    Repo.delete_all(BankTransactionSchema)
+  end
+
+  def count_bank_transactions() do
+    from(bt in BankTransactionSchema, select: count(bt.id)) |> Repo.one()
+  end
+
+  def get_latest_transaction_date() do
+    from(bt in BankTransactionSchema, select: max(bt.buchungsdatum)) |> Repo.one()
+  end
+
+  # Category Override functions
+
+  def get_all_category_overrides() do
+    Repo.all(OverrideSchema)
+    |> Enum.reduce(%{}, fn override, acc ->
+      Map.put(acc, override.transaction_id, String.to_atom(override.category))
+    end)
+  end
+
+  def set_category_override(transaction_id, category) when is_atom(category) do
+    set_category_override(transaction_id, Atom.to_string(category))
+  end
+
+  def set_category_override(transaction_id, category) when is_binary(category) do
+    case Repo.get_by(OverrideSchema, transaction_id: transaction_id) do
+      nil ->
+        %OverrideSchema{}
+        |> OverrideSchema.changeset(%{transaction_id: transaction_id, category: category})
+        |> Repo.insert()
+
+      existing ->
+        existing
+        |> OverrideSchema.changeset(%{category: category})
+        |> Repo.update()
+    end
+  end
+
+  def delete_category_override(transaction_id) do
+    case Repo.get_by(OverrideSchema, transaction_id: transaction_id) do
+      nil -> {:ok, nil}
+      override -> Repo.delete(override)
+    end
+  end
+
+  def get_bank_transaction(id) do
+    case Repo.get(BankTransactionSchema, id) do
+      nil -> nil
+      schema -> BankTransactionSchema.to_struct(schema)
+    end
+  end
+
+  def find_similar_transaction_ids(zahlungsempfaenger, verwendungszweck) do
+    from(bt in BankTransactionSchema,
+      where: bt.zahlungsempfaenger == ^zahlungsempfaenger and bt.verwendungszweck == ^verwendungszweck,
+      select: bt.id
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Exports overrides as natural key mappings: {zahlungsempfaenger, verwendungszweck} -> category
+  """
+  def export_overrides_by_natural_key() do
+    overrides = get_all_category_overrides()
+
+    overrides
+    |> Enum.reduce(%{}, fn {transaction_id, category}, acc ->
+      case get_bank_transaction(transaction_id) do
+        nil -> acc
+        tx -> Map.put(acc, {tx.zahlungsempfaenger, tx.verwendungszweck}, category)
+      end
+    end)
+  end
+
+  @doc """
+  Re-applies overrides based on natural key (zahlungsempfaenger + verwendungszweck).
+  Returns count of re-applied overrides.
+  """
+  def reapply_overrides_by_natural_key(natural_key_overrides) do
+    natural_key_overrides
+    |> Enum.reduce(0, fn {{empfaenger, zweck}, category}, count ->
+      ids = find_similar_transaction_ids(empfaenger, zweck)
+
+      Enum.each(ids, fn id ->
+        set_category_override(id, category)
+      end)
+
+      count + length(ids)
+    end)
+  end
+
+  @doc """
+  Clears all overrides.
+  """
+  def clear_category_overrides() do
+    Repo.delete_all(OverrideSchema)
   end
 end

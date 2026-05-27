@@ -1,0 +1,6 @@
+# Update this file in <https://github.com/EnBWAG/netzlive.github> in `dev-env-config/.tool-versions`
+
+elixir 1.18.4-otp-27
+erlang 27.3.4.1
+nodejs 22.17.0
+yarn 1.22.22

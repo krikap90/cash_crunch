@@ -30,6 +30,9 @@ cash_crunch_*.db
 cash_crunch_*.db-shm
 cash_crunch_*.db-wal
 
+# Ignore CSV data files
+/data/*.csv
+
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
 
