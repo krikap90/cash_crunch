@@ -248,6 +248,55 @@ defmodule CashCrunchWeb.TransactionsLive do
     end
   end
 
+  def handle_event("preset-last-year", _params, socket) do
+    today = Date.utc_today()
+    start_date = Date.new!(today.year - 1, 1, 1)
+    end_date = Date.new!(today.year - 1, 12, 31)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_transactions()}
+  end
+
+  def handle_event("preset-current-year", _params, socket) do
+    today = Date.utc_today()
+    start_date = Date.new!(today.year, 1, 1)
+    end_date = Date.new!(today.year, 12, 31)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_transactions()}
+  end
+
+  def handle_event("preset-last-month", _params, socket) do
+    today = Date.utc_today()
+    last_month = Date.add(Date.beginning_of_month(today), -1)
+    start_date = Date.beginning_of_month(last_month)
+    end_date = Date.end_of_month(last_month)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_transactions()}
+  end
+
+  def handle_event("preset-current-month", _params, socket) do
+    today = Date.utc_today()
+    start_date = Date.beginning_of_month(today)
+    end_date = Date.end_of_month(today)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_transactions()}
+  end
+
   @impl true
   def handle_event("import-csv", _params, socket) do
     csv_path = Path.join(File.cwd!(), "data/2026.csv")

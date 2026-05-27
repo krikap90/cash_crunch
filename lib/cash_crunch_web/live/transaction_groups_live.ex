@@ -386,29 +386,39 @@ defmodule CashCrunchWeb.TransactionGroupsLive do
             </.card>
           </div>
 
-          <.accordion>
-            <%= for category <- TransactionGrouper.categories(), length(@grouped[category]) > 0 do %>
-              <.accordion_item>
-                <.accordion_trigger class="hover:no-underline">
-                  <div class="flex justify-between items-center w-full pr-4">
-                    <span class={"text-lg font-semibold #{category_color(category)}"}>
-                      {TransactionGrouper.category_name(category)}
-                    </span>
-                    <span class="text-sm text-muted-foreground">
-                      {length(@grouped[category])} Buchungen · {format(@sums[category])}
-                    </span>
-                  </div>
-                </.accordion_trigger>
-                <.accordion_content>
-                  <.render_category_table
-                    category={category}
-                    transactions={@grouped[category]}
-                    sum={@sums[category]}
-                  />
-                </.accordion_content>
-              </.accordion_item>
-            <% end %>
-          </.accordion>
+          <.card>
+            <.card_header>
+              <.card_title>Transaktionen nach Kategorie</.card_title>
+              <.card_description>
+                Alle Transaktionen gruppiert nach Kategorie
+              </.card_description>
+            </.card_header>
+            <.card_content>
+              <.accordion>
+                <%= for category <- TransactionGrouper.categories(), length(@grouped[category]) > 0 do %>
+                  <.accordion_item>
+                    <.accordion_trigger class="hover:no-underline">
+                      <div class="flex justify-between items-center w-full pr-4">
+                        <span class={"text-lg font-semibold #{category_color(category)}"}>
+                          {TransactionGrouper.category_name(category)}
+                        </span>
+                        <span class="text-sm text-muted-foreground">
+                          {length(@grouped[category])} Buchungen · {format(@sums[category])}
+                        </span>
+                      </div>
+                    </.accordion_trigger>
+                    <.accordion_content>
+                      <.render_category_table
+                        category={category}
+                        transactions={@grouped[category]}
+                        sum={@sums[category]}
+                      />
+                    </.accordion_content>
+                  </.accordion_item>
+                <% end %>
+              </.accordion>
+            </.card_content>
+          </.card>
 
           <.card class="mt-4">
             <.card_header>
@@ -568,6 +578,59 @@ defmodule CashCrunchWeb.TransactionGroupsLive do
       _ ->
         {:noreply, socket |> put_flash(:error, "Ungültiges Datumsformat")}
     end
+  end
+
+  def handle_event("preset-last-year", _params, socket) do
+    today = Date.utc_today()
+    start_date = Date.new!(today.year - 1, 1, 1)
+    end_date = Date.new!(today.year - 1, 12, 31)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_grouped_transactions()
+     |> push_chart_updates()}
+  end
+
+  def handle_event("preset-current-year", _params, socket) do
+    today = Date.utc_today()
+    start_date = Date.new!(today.year, 1, 1)
+    end_date = Date.new!(today.year, 12, 31)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_grouped_transactions()
+     |> push_chart_updates()}
+  end
+
+  def handle_event("preset-last-month", _params, socket) do
+    today = Date.utc_today()
+    last_month = Date.add(Date.beginning_of_month(today), -1)
+    start_date = Date.beginning_of_month(last_month)
+    end_date = Date.end_of_month(last_month)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_grouped_transactions()
+     |> push_chart_updates()}
+  end
+
+  def handle_event("preset-current-month", _params, socket) do
+    today = Date.utc_today()
+    start_date = Date.beginning_of_month(today)
+    end_date = Date.end_of_month(today)
+
+    {:noreply,
+     socket
+     |> assign(:start_date, start_date)
+     |> assign(:end_date, end_date)
+     |> load_grouped_transactions()
+     |> push_chart_updates()}
   end
 
   @impl true

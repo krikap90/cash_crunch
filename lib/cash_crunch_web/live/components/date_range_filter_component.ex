@@ -23,6 +23,40 @@ defmodule CashCrunchWeb.Components.DateRangeFilterComponent do
         </.card_header>
         <.card_content class="p-6 text-sm">
           <div class="grid gap-3">
+            <div class="grid grid-cols-2 gap-2 mb-4">
+              <.button
+                type="button"
+                variant="outline"
+                size="sm"
+                phx-click="preset-last-year"
+              >
+                Letztes Jahr
+              </.button>
+              <.button
+                type="button"
+                variant="outline"
+                size="sm"
+                phx-click="preset-current-year"
+              >
+                Aktuelles Jahr
+              </.button>
+              <.button
+                type="button"
+                variant="outline"
+                size="sm"
+                phx-click="preset-last-month"
+              >
+                Letzter Monat
+              </.button>
+              <.button
+                type="button"
+                variant="outline"
+                size="sm"
+                phx-click="preset-current-month"
+              >
+                Aktueller Monat
+              </.button>
+            </div>
             <.form :let={f} for={%{}} phx-submit="filter-date-range" class="space-y-4">
               <.form_item>
                 <.form_label error={not Enum.empty?(f[:start_date].errors)}>
