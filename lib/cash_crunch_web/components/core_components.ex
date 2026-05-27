@@ -212,15 +212,7 @@ defmodule CashCrunchWeb.CoreComponents do
     """
   end
 
-  @doc """
-  Renders a button.
-
-  ## Examples
-
-      <.button>Send!</.button>
-      <.button phx-click="go" class="ml-2">Send!</.button>
-  """
-
+  # Button function is provided by SaladUI, keeping commented code for reference
   # attr :type, :string, default: nil
   # attr :class, :string, default: nil
   # attr :rest, :global, include: ~w(disabled form name value)
@@ -443,17 +435,7 @@ defmodule CashCrunchWeb.CoreComponents do
     """
   end
 
-  @doc ~S"""
-  Renders a table with generic styling.
-
-  ## Examples
-
-      <.table id="users" rows={@users}>
-        <:col :let={user} label="id">{user.id}</:col>
-        <:col :let={user} label="username">{user.username}</:col>
-      </.table>
-  """
-
+  # Table function is provided by SaladUI, keeping commented code for reference
   # attr :id, :string, required: true
   # attr :rows, :list, required: true
   # attr :row_id, :any, default: nil, doc: "the function for generating the row id"

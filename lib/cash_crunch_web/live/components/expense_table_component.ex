@@ -4,7 +4,6 @@ defmodule CashCrunchWeb.Components.ExpenseTableComponent do
   import SaladUI.Accordion
   import SaladUI.Button
   import SaladUI.Card
-  import SaladUI.Table
   import SaladUI.Form
   import SaladUI.Input
   import SaladUI.Select
@@ -28,11 +27,11 @@ defmodule CashCrunchWeb.Components.ExpenseTableComponent do
           </.card_description>
         </.card_header>
         <.card_content>
-          <.accordion id="accordion-single-multiple-accordion" type="multiple">
+          <.accordion>
             <%= for {name, element_group} <- @elements |>  Enum.group_by(fn el -> el.name end) |> order_expenses(@order_by) do %>
               <% expenses_with_relevance =
                 Expense.add_relevance(element_group, @month_start, @month_end) %>
-              <.accordion_item value="{name}">
+              <.accordion_item>
                 <.accordion_trigger>
                   <div class="grid grid-cols-3 gap-2 w-full">
                     <div>
@@ -52,10 +51,7 @@ defmodule CashCrunchWeb.Components.ExpenseTableComponent do
                 <.accordion_content>
                   <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
                     <%= for element <- expenses_with_relevance |> order_expense_group() do %>
-                      <.card class={[
-                        "sm:col-span-1",
-                        if(element.relevant == true, do: "bg-blue-50")
-                      ]}>
+                      <.card class={"sm:col-span-1 #{if(element.relevant == true, do: "bg-blue-50", else: "")}"}>
                         <.card_header class="pb-2">
                           <.card_description>
                             von {format(element.datetime)} <br />bis {format(element.expired_at)}

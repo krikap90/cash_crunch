@@ -59,7 +59,6 @@ defmodule CashCrunchWeb.TransactionsLive do
         @reference_balance
 
       :gt ->
-        transactions_after_ref = Repo.get_bank_transactions_after(@reference_date)
         transactions_until_end = Repo.get_bank_transactions_in_range(Date.add(@reference_date, 1), end_date)
 
         after_grouped = BankTransaction.group_by_type(transactions_until_end)
@@ -130,10 +129,7 @@ defmodule CashCrunchWeb.TransactionsLive do
             <.card class="sm:col-span-1">
               <.card_header class="pb-2">
                 <.card_description>Differenz</.card_description>
-                <.card_title class={[
-                  "text-3xl",
-                  if(@differenz >= 0, do: "text-green-600", else: "text-red-600")
-                ]}>
+                <.card_title class={"text-3xl #{if(@differenz >= 0, do: "text-green-600", else: "text-red-600")}"}>
                   {format(@differenz)}
                 </.card_title>
               </.card_header>

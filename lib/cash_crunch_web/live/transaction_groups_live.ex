@@ -386,12 +386,12 @@ defmodule CashCrunchWeb.TransactionGroupsLive do
             </.card>
           </div>
 
-          <.accordion id="category-accordion" type="multiple">
+          <.accordion>
             <%= for category <- TransactionGrouper.categories(), length(@grouped[category]) > 0 do %>
-              <.accordion_item value={Atom.to_string(category)}>
+              <.accordion_item>
                 <.accordion_trigger class="hover:no-underline">
                   <div class="flex justify-between items-center w-full pr-4">
-                    <span class={["text-lg font-semibold", category_color(category)]}>
+                    <span class={"text-lg font-semibold #{category_color(category)}"}>
                       {TransactionGrouper.category_name(category)}
                     </span>
                     <span class="text-sm text-muted-foreground">
@@ -570,18 +570,6 @@ defmodule CashCrunchWeb.TransactionGroupsLive do
     end
   end
 
-  defp push_chart_updates(socket) do
-    socket
-    |> push_event("update-stacked-bar-chart", %{
-      labels: socket.assigns.chart_labels,
-      datasets: socket.assigns.chart_datasets
-    })
-    |> push_event("update-line-chart", %{
-      labels: socket.assigns.daily_labels,
-      datasets: socket.assigns.daily_datasets
-    })
-  end
-
   @impl true
   def handle_event("set-resolution", %{"resolution" => resolution}, socket) do
     resolution_atom = String.to_atom(resolution)
@@ -617,5 +605,17 @@ defmodule CashCrunchWeb.TransactionGroupsLive do
          |> load_grouped_transactions()
          |> push_chart_updates()}
     end
+  end
+
+  defp push_chart_updates(socket) do
+    socket
+    |> push_event("update-stacked-bar-chart", %{
+      labels: socket.assigns.chart_labels,
+      datasets: socket.assigns.chart_datasets
+    })
+    |> push_event("update-line-chart", %{
+      labels: socket.assigns.daily_labels,
+      datasets: socket.assigns.daily_datasets
+    })
   end
 end
