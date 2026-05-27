@@ -11,7 +11,7 @@ defmodule CashCrunchWeb.UserForgotPasswordLive do
     ~H"""
     <main class="h-screen flex items-center justify-center">
       <div class="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1 ml-12 mt-8">
-      <.card>
+        <.card>
           <.card_header class="px-7">
             <.card_title>
               Passwort vergessen?
@@ -23,17 +23,17 @@ defmodule CashCrunchWeb.UserForgotPasswordLive do
           <.card_content>
             <div>
               <.simple_form for={@form} id="reset_password_form" phx-submit="send_email">
-              <.input field={@form[:email]} type="email" placeholder="Email" required />
-              <:actions>
-                <.button phx-disable-with="Sende..." class="w-full">
-                  Sende Passwort Reset
-                </.button>
-              </:actions>
-            </.simple_form>
-            <p class="text-center text-sm mt-4">
-              <.link href={~p"/users/register"}>Registrieren</.link>
-              | <.link href={~p"/users/log_in"}>Login</.link>
-            </p>
+                <.input field={@form[:email]} type="email" placeholder="Email" required />
+                <:actions>
+                  <.button phx-disable-with="Sende..." class="w-full">
+                    Sende Passwort Reset
+                  </.button>
+                </:actions>
+              </.simple_form>
+              <p class="text-center text-sm mt-4">
+                <.link href={~p"/users/register"}>Registrieren</.link>
+                | <.link href={~p"/users/log_in"}>Login</.link>
+              </p>
             </div>
           </.card_content>
         </.card>

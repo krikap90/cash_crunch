@@ -1,5 +1,4 @@
 defmodule CashCrunchWeb.Components.ReferenceMonthComponent do
-
   use CashCrunchWeb, :live_component
 
   import SaladUI.Button
@@ -26,11 +25,11 @@ defmodule CashCrunchWeb.Components.ReferenceMonthComponent do
           <div class="grid gap-3">
             <.form :let={f} for={%{}} phx-submit="select-ref-dt" class="w-2/3 space-y-6">
               <.form_item>
-                <.form_label error={not Enum.empty?(f[:datetime].errors)}>
+                <.form_label error={not Enum.empty?(f[:ref_datetime].errors)}>
                   Referenzdatum
                 </.form_label>
                 <.input
-                  field={f[:datetime]}
+                  field={f[:ref_datetime]}
                   type="date"
                   placeholder="Referenzdatum"
                   phx-debounce="500"
@@ -39,7 +38,7 @@ defmodule CashCrunchWeb.Components.ReferenceMonthComponent do
                 <.form_description>
                   Das ist das Datum, das als Berechnungsgrundlage genutzt wird. Relevant ist vor Allem der ausgewählte Monat und das Jahr.
                 </.form_description>
-                <.form_message field={f[:datetime]} />
+                <.form_message field={f[:ref_datetime]} />
               </.form_item>
               <.button type="submit" class="w-full mt-2">auswählen</.button>
             </.form>

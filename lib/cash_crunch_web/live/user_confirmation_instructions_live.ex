@@ -11,7 +11,7 @@ defmodule CashCrunchWeb.UserConfirmationInstructionsLive do
     ~H"""
     <main class="h-screen flex items-center justify-center">
       <div class="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1 ml-12 mt-8">
-      <.card>
+        <.card>
           <.card_header class="px-7">
             <.card_title>
               No confirmation instructions received?

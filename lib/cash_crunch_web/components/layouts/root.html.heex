@@ -24,11 +24,13 @@
           <%= if @current_user do %>
             <.tooltip>
               <tooltip_trigger>
-                <% class = if "@current_path" == "/" do "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8" else "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8" end %>
-                <.link
-                  href="/"
-                  class={class}
-                >
+                <% class =
+                  if "@current_path" == "/" do
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  else
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  end %>
+                <.link href="/" class={class}>
                   <Lucideicons.list_ordered class="h-5 w-5" />
                   <span class="sr-only">
                     Dashboard
@@ -41,11 +43,13 @@
             </.tooltip>
             <.tooltip>
               <tooltip_trigger>
-                <% class = if "@current_path" == "/overview" do "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8" else "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8" end %>
-                <.link
-                  href="/overview"
-                  class={class}
-                >
+                <% class =
+                  if "@current_path" == "/overview" do
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  else
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  end %>
+                <.link href="/overview" class={class}>
                   <Lucideicons.chart_line class="h-5 w-5" />
                   <span class="sr-only">
                     Jahresüberblick

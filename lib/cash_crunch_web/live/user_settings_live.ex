@@ -11,7 +11,7 @@ defmodule CashCrunchWeb.UserSettingsLive do
     ~H"""
     <main class="h-screen flex items-center justify-center">
       <div class="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1 ml-12 mt-8">
-      <.card>
+        <.card>
           <.card_header class="px-7">
             <.card_title>
               User Einstellungen
@@ -28,7 +28,13 @@ defmodule CashCrunchWeb.UserSettingsLive do
                 phx-submit="update_email"
                 phx-change="validate_email"
               >
-                <.input field={@email_form[:email]} type="email" placeholder="Email"  class="w-[500px]" required />
+                <.input
+                  field={@email_form[:email]}
+                  type="email"
+                  placeholder="Email"
+                  class="w-[500px]"
+                  required
+                />
                 <.input
                   field={@email_form[:current_password]}
                   name="current_password"
@@ -36,7 +42,7 @@ defmodule CashCrunchWeb.UserSettingsLive do
                   type="password"
                   placeholder="Current password"
                   value={@email_form_current_password}
-                   class="w-[500px]"
+                  class="w-[500px]"
                   required
                 />
                 <:actions>
@@ -59,14 +65,20 @@ defmodule CashCrunchWeb.UserSettingsLive do
                   type="hidden"
                   id="hidden_user_email"
                   value={@current_email}
-                   class="w-[500px]"
+                  class="w-[500px]"
                 />
-                <.input field={@password_form[:password]} type="password" placeholder="New password" class="w-[500px]" required />
+                <.input
+                  field={@password_form[:password]}
+                  type="password"
+                  placeholder="New password"
+                  class="w-[500px]"
+                  required
+                />
                 <.input
                   field={@password_form[:password_confirmation]}
                   type="password"
                   placeholder="Confirm new password"
-                   class="w-[500px]"
+                  class="w-[500px]"
                 />
                 <.input
                   field={@password_form[:current_password]}
@@ -75,7 +87,7 @@ defmodule CashCrunchWeb.UserSettingsLive do
                   placeholder="Current password"
                   id="current_password_for_password"
                   value={@current_password}
-                   class="w-[500px]"
+                  class="w-[500px]"
                   required
                 />
                 <:actions>

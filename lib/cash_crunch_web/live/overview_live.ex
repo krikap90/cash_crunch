@@ -3,13 +3,8 @@ defmodule CashCrunchWeb.OverviewLive do
   use CashCrunchWeb, :live_view
 
   import SaladUI.Breadcrumb
-  import SaladUI.Button
   import SaladUI.Card
-  import SaladUI.Table
-  import SaladUI.Select
   import SaladUI.Tabs
-  import SaladUI.Form
-  import SaladUI.Input
 
   import CashCrunchWeb.HtmlHelpers
 
@@ -20,6 +15,10 @@ defmodule CashCrunchWeb.OverviewLive do
   alias CashCrunch.Schema.RealSaving, as: RSSchema
 
   alias CashCrunch.Repo
+
+  alias CashCrunchWeb.Components.OverviewTableComponent
+  alias CashCrunchWeb.Components.RealSavingsFormComponent
+  alias CashCrunchWeb.Components.ReferenceYearComponent
 
   @start_value_2024 55.89
 
@@ -89,81 +88,15 @@ defmodule CashCrunchWeb.OverviewLive do
                     </.card_description>
                   </.card_header>
                   <.card_content>
-                    <.table class="table-auto">
-                      <.table_header>
-                        <.table_row>
-                          <.table_head>
-                            &nbsp;
-                          </.table_head>
-                          <.table_head>
-                            Januar
-                          </.table_head>
-                          <.table_head>
-                            Februar
-                          </.table_head>
-                          <.table_head>
-                            März
-                          </.table_head>
-                          <.table_head>
-                            April
-                          </.table_head>
-                          <.table_head>
-                            Mai
-                          </.table_head>
-                          <.table_head>
-                            Juni
-                          </.table_head>
-                          <.table_head>
-                            Juli
-                          </.table_head>
-                          <.table_head>
-                            August
-                          </.table_head>
-                          <.table_head>
-                            September
-                          </.table_head>
-                          <.table_head>
-                            Oktober
-                          </.table_head>
-                          <.table_head>
-                            November
-                          </.table_head>
-                          <.table_head>
-                            Dezember
-                          </.table_head>
-                        </.table_row>
-                        <.table_row>
-                          <.table_cell>
-                            <Lucideicons.banknote class="h-3.5 w-3.5" />
-                          </.table_cell>
-                          <%= for {_month, sum} <- @relevant_ins do %>
-                            <.table_cell>
-                              {format(sum)}
-                            </.table_cell>
-                          <% end %>
-                        </.table_row>
-                        <.table_row>
-                          <.table_cell>
-                            <Lucideicons.barcode class="h-3.5 w-3.5" />
-                          </.table_cell>
-                          <%= for {_month, sum} <- @relevant_outs do %>
-                            <.table_cell>
-                              {format(sum)}
-                            </.table_cell>
-                          <% end %>
-                        </.table_row>
-                        <.table_row class="bg-slate-50">
-                          <.table_cell>
-                            Σ
-                          </.table_cell>
-                          <%= for {month, sum} <- @relevant_ins do %>
-                            <.table_cell>
-                              {(sum - Map.get(@relevant_outs, month)) |> format()}
-                            </.table_cell>
-                          <% end %>
-                        </.table_row>
-                      </.table_header>
-                    </.table>
+                    <.live_component
+                      module={OverviewTableComponent}
+                      id="in-and-outs"
+                      relevant_ins={@relevant_ins}
+                      icon_ins="☺"
+                      relevant_outs={@relevant_outs}
+                      icon_outs="☹"
+                      sum_factor={1}
+                    />
                   </.card_content>
                   <.card_footer>
                     <div style="width: 100%; height: 500px;">
@@ -192,73 +125,17 @@ defmodule CashCrunchWeb.OverviewLive do
                     </.card_description>
                   </.card_header>
                   <.card_content>
-                    <.table class="table-auto">
-                      <.table_header>
-                        <.table_row>
-                          <.table_head>
-                            &nbsp;
-                          </.table_head>
-                          <.table_head>
-                            Januar
-                          </.table_head>
-                          <.table_head>
-                            Februar
-                          </.table_head>
-                          <.table_head>
-                            März
-                          </.table_head>
-                          <.table_head>
-                            April
-                          </.table_head>
-                          <.table_head>
-                            Mai
-                          </.table_head>
-                          <.table_head>
-                            Juni
-                          </.table_head>
-                          <.table_head>
-                            Juli
-                          </.table_head>
-                          <.table_head>
-                            August
-                          </.table_head>
-                          <.table_head>
-                            September
-                          </.table_head>
-                          <.table_head>
-                            Oktober
-                          </.table_head>
-                          <.table_head>
-                            November
-                          </.table_head>
-                          <.table_head>
-                            Dezember
-                          </.table_head>
-                        </.table_row>
-                        <.table_row>
-                          <.table_cell>
-                            <Lucideicons.chart_no_axes_column class="h-3.5 w-3.5" />
-                          </.table_cell>
-                          <%= for {_month, sum} <- @relevant_savings do %>
-                            <.table_cell>
-                              {format(sum)}
-                            </.table_cell>
-                          <% end %>
-                        </.table_row>
-                        <.table_row>
-                          <.table_cell>
-                            <Lucideicons.chart_no_axes_combined class="h-3.5 w-3.5" />
-                          </.table_cell>
-                          <% real_savings_for_year =
-                            real_savings_for_year(@real_savings, @ref_datetime) %>
-                          <%= for {_month, sum} <- real_savings_for_year do %>
-                            <.table_cell>
-                              {format(sum)}
-                            </.table_cell>
-                          <% end %>
-                        </.table_row>
-                      </.table_header>
-                    </.table>
+                    <% real_savings_for_year =
+                      real_savings_for_year(@real_savings, @ref_datetime) %>
+                    <.live_component
+                      module={OverviewTableComponent}
+                      id="savings"
+                      relevant_ins={@relevant_savings}
+                      icon_ins="◳"
+                      relevant_outs={real_savings_for_year}
+                      icon_outs="◷"
+                      sum_factor={-1}
+                    />
                   </.card_content>
                   <.card_footer>
                     <div style="width: 100%; height: 500px;">
@@ -284,97 +161,8 @@ defmodule CashCrunchWeb.OverviewLive do
         </div>
 
         <div>
-          <.card class="overflow-hidden mb-8">
-            <.card_header class="flex flex-row items-start bg-muted/50">
-              <div class="grid gap-0.5">
-                <.card_title class="group flex items-center gap-2 text-lg">
-                  Zeitraum wählen
-                </.card_title>
-                <.card_description>
-                  Hier können Sie den Zeitraum wählen, der betrachtet werden soll.
-                </.card_description>
-              </div>
-            </.card_header>
-            <.card_content class="p-6 text-sm">
-              <div class="grid gap-3">
-                <.form :let={f} for={%{}} phx-submit="select-year" class="w-2/3 space-y-6">
-                  <.select
-                    :let={select}
-                    id="select-year"
-                    name="year"
-                    field={f[:year]}
-                    phx-debounce="500"
-                    placeholder="Wähle ein Jahr aus"
-                  >
-                    <.select_trigger builder={select} class="w-full mt-2" />
-                    <.select_content class="w-full" builder={select}>
-                      <.select_group>
-                        <.select_item builder={select} value="-1" label="Letztes Jahr"></.select_item>
-                        <.select_item builder={select} value="0" label="Dieses Jahr"></.select_item>
-                        <.select_item builder={select} value="+1" label="Nächstes Jahr">
-                        </.select_item>
-                      </.select_group>
-                    </.select_content>
-                  </.select>
-                  <.button type="submit" class="w-full mt-2">auswählen</.button>
-                </.form>
-              </div>
-            </.card_content>
-            <.card_footer>
-              &nbsp;
-            </.card_footer>
-          </.card>
-
-          <.card class="overflow-hidden">
-            <.card_header class="flex flex-row items-start bg-muted/50">
-              <div class="grid gap-0.5">
-                <.card_title class="group flex items-center gap-2 text-lg">
-                  Reale Sparkonto-Daten hinzufügen
-                </.card_title>
-                <.card_description>
-                  Hier können die realen Kontostände des Sparkontos hinzugefügt werden, um einen Vergleich mit den Prognosen zu haben.
-                </.card_description>
-              </div>
-            </.card_header>
-            <.card_content class="p-6 text-sm">
-              <div class="grid gap-3">
-                <.form :let={f} for={%{}} phx-submit="save-real-saving" class="w-2/3 space-y-6">
-                  <.form_item>
-                    <.form_label error={not Enum.empty?(f[:datetime].errors)}>
-                      Datum
-                    </.form_label>
-                    <.input
-                      field={f[:datetime]}
-                      type="date"
-                      placeholder="Datum"
-                      phx-debounce="500"
-                      required
-                    />
-                    <.form_description>
-                      Das ist das Datum des angegebenen Kontostands.
-                    </.form_description>
-                    <.form_message field={f[:datetime]} />
-                  </.form_item>
-                  <.form_item>
-                    <.form_label error={not Enum.empty?(f[:value].errors)}>Kontostand</.form_label>
-                    <.input
-                      field={f[:value]}
-                      type="text"
-                      placeholder="Kontostand"
-                      phx-debounce="500"
-                      required
-                    />
-                    <.form_description>
-                      Das ist der Kontostand zum angebebenen Zeitpunkt
-                    </.form_description>
-                    <.form_message field={f[:value]} />
-                  </.form_item>
-
-                  <.button type="submit">speichern</.button>
-                </.form>
-              </div>
-            </.card_content>
-          </.card>
+          <.live_component module={ReferenceYearComponent} id="reference_year" />
+          <.live_component module={RealSavingsFormComponent} id="reference_year" />
         </div>
       </main>
     </div>
@@ -441,7 +229,11 @@ defmodule CashCrunchWeb.OverviewLive do
     |> RSSchema.changeset()
     |> Repo.insert()
 
-    {:noreply, socket}
+    real_savings = Repo.get_real_savings()
+
+    {:noreply,
+     socket
+     |> assign(:real_savings, real_savings)}
   end
 
   defp real_savings_for_year(real_savings, ref_datetime) do

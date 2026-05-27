@@ -10,7 +10,7 @@ defmodule CashCrunchWeb.UserLoginLive do
     ~H"""
     <main class="h-screen flex items-center justify-center">
       <div class="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1 ml-12 mt-8">
-      <.card>
+        <.card>
           <.card_header class="px-7">
             <.card_title>
               Melde dich an
@@ -30,7 +30,9 @@ defmodule CashCrunchWeb.UserLoginLive do
                 <.input field={@form[:password]} type="password" placeholder="Password" required />
 
                 <div className="flex items-center space-x-2">
-                  <.label for="checked"><.checkbox id="checked" field={@form[:remember_me]}/> Eingeloggt bleiben</.label>
+                  <.label for="checked">
+                    <.checkbox id="checked" field={@form[:remember_me]} /> Eingeloggt bleiben
+                  </.label>
                 </div>
                 <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
                   Passwort vergessen?

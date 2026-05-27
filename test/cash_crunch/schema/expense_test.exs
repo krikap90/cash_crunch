@@ -7,11 +7,14 @@ defmodule CashCrunch.Schema.ExpenseTest do
   describe "expense records" do
     test "changeset/2 and cast_to structs" do
       struct = %ExpenseStruct{
+        id: "1",
         name: "expense with expire_date",
+        type: "out",
         value: 50.0,
         datetime: ~U[2025-02-02 00:00:00Z],
         expired_at: ~U[2030-02-01 23:59:59Z],
-        repeats_every: [months: 1]
+        repeats_every_type: "months",
+        repeats_every_value: 1
       }
 
       changeset = Expense.changeset(struct)

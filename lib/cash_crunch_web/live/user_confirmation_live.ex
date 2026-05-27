@@ -10,7 +10,7 @@ defmodule CashCrunchWeb.UserConfirmationLive do
     ~H"""
     <main class="h-screen flex items-center justify-center">
       <div class="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1 ml-12 mt-8">
-      <.card>
+        <.card>
           <.card_header class="px-7">
             <.card_title>
               Bestätige den User
@@ -24,7 +24,9 @@ defmodule CashCrunchWeb.UserConfirmationLive do
               <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
                 <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
                 <:actions>
-                  <.button phx-disable-with="Bestätige..." class="w-full">Bestätige meinen User</.button>
+                  <.button phx-disable-with="Bestätige..." class="w-full">
+                    Bestätige meinen User
+                  </.button>
                 </:actions>
               </.simple_form>
 

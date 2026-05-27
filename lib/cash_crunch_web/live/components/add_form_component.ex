@@ -1,5 +1,4 @@
 defmodule CashCrunchWeb.Components.AddFormComponent do
-
   use CashCrunchWeb, :live_component
 
   import SaladUI.Button
@@ -28,13 +27,7 @@ defmodule CashCrunchWeb.Components.AddFormComponent do
             <.form :let={f} for={%{}} phx-submit="save" class="w-2/3 space-y-6">
               <.form_item>
                 <.form_label error={not Enum.empty?(f[:name].errors)}>Name</.form_label>
-                <.input
-                  field={f[:name]}
-                  type="text"
-                  placeholder="Name"
-                  phx-debounce="500"
-                  required
-                />
+                <.input field={f[:name]} type="text" placeholder="Name" phx-debounce="500" required />
                 <.form_description>
                   Das ist der Name der Einnahme oder Ausgabe.
                 </.form_description>
@@ -55,8 +48,7 @@ defmodule CashCrunchWeb.Components.AddFormComponent do
                     <.select_group>
                       <.select_item builder={select} value="out" label="Ausgabe"></.select_item>
                       <.select_item builder={select} value="in" label="Einnahme"></.select_item>
-                      <.select_item builder={select} value="saving" label="Einsparung">
-                      </.select_item>
+                      <.select_item builder={select} value="saving" label="Einsparung"></.select_item>
                     </.select_group>
                   </.select_content>
                 </.select>

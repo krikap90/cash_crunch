@@ -1,5 +1,5 @@
 defmodule CashCrunchWeb.HtmlHelpers do
-  alias CashCrunch.Domain.RealSaving
+  alias CashCrunch.Domain.Expense, as: ExpenseDomain
 
   def format(nil), do: "---"
 
@@ -12,11 +12,36 @@ defmodule CashCrunchWeb.HtmlHelpers do
     end
   end
 
-  def format(months: 1), do: "Jeden Monat"
-  def format(months: amount), do: "Alle #{amount} Monate"
-  def format(years: 1), do: "Jedes Jahr"
-  def format(years: amount), do: "Alle #{amount} Jahre"
-  def format(real_saving = %RealSaving{}), do: format(real_saving.value)
+  # Format für die neue Domain.Expense Struktur
+  def format(%{repeats_every_type: nil}), do: "---"
+  def format(%{repeats_every_type: "nil"}), do: "---"
+
+  def format(%{repeats_every_type: "months", repeats_every_value: 1}),
+    do: "Jeden Monat"
+
+  def format(%{repeats_every_type: "months", repeats_every_value: amount}),
+    do: "Alle #{amount} Monate"
+
+  def format(%{repeats_every_type: "years", repeats_every_value: 1}),
+    do: "Jedes Jahr"
+
+  def format(%{repeats_every_type: "years", repeats_every_value: amount}),
+    do: "Alle #{amount} Jahre"
+
+  def format(list_of_expenses, :repetition) do
+    Enum.max(list_of_expenses, fn x, y -> Timex.after?(x.datetime, y.datetime) end)
+    |> format
+  end
+
+  def format(list_of_expenses, :value) do
+    exp = Enum.max(list_of_expenses, fn x, y -> Timex.after?(x.datetime, y.datetime) end)
+    exp.value |> format
+  end
+
+  def order_expenses(expenses, "name") when is_map(expenses) do
+    expenses
+    |> Enum.sort_by(fn {name, _group} -> name end)
+  end
 
   def order_expenses(expenses, "name") do
     expenses
@@ -26,6 +51,10 @@ defmodule CashCrunchWeb.HtmlHelpers do
   def order_expenses(expenses, "value") do
     expenses
     |> Enum.sort_by(& &1.value, :desc)
+  end
+
+  def order_expense_group(expense_group) do
+    expense_group |> Enum.sort_by(& &1.datetime, :desc)
   end
 
   def percentage(income_sum, cost_sum) do
@@ -81,6 +110,7 @@ defmodule CashCrunchWeb.HtmlHelpers do
       nil
     else
       Timex.parse!(datetime, "%Y-%m-%d", :strftime)
+      |> DateTime.from_naive!("Etc/UTC")
     end
   end
 
@@ -97,6 +127,14 @@ defmodule CashCrunchWeb.HtmlHelpers do
       String.to_float(number_as_string)
     rescue
       ArgumentError -> String.to_integer(number_as_string) / 1
+    end
+  end
+
+  def parse_string(string_or_nil) do
+    if string_or_nil == "" || string_or_nil == "nil" do
+      nil
+    else
+      string_or_nil
     end
   end
 

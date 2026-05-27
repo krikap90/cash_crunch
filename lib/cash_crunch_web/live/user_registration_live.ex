@@ -12,7 +12,7 @@ defmodule CashCrunchWeb.UserRegistrationLive do
     ~H"""
     <main class="h-screen flex items-center justify-center">
       <div class="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1 ml-12 mt-8">
-      <.card>
+        <.card>
           <.card_header class="px-7">
             <.card_title>
               Registriere einen neuen User
@@ -39,8 +39,20 @@ defmodule CashCrunchWeb.UserRegistrationLive do
                   Oops, something went wrong! Please check the errors below.
                 </.error>
 
-                <.input field={@form[:email]} type="email" placeholder="Email" class="w-[500px]" required />
-                <.input field={@form[:password]} type="password" placeholder="Password" class="w-[500px]" required />
+                <.input
+                  field={@form[:email]}
+                  type="email"
+                  placeholder="Email"
+                  class="w-[500px]"
+                  required
+                />
+                <.input
+                  field={@form[:password]}
+                  type="password"
+                  placeholder="Password"
+                  class="w-[500px]"
+                  required
+                />
 
                 <:actions>
                   <.button phx-disable-with="Erstelle User...">Erstelle User</.button>

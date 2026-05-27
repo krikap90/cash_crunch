@@ -1,5 +1,4 @@
 defmodule CashCrunchWeb.Components.ExpenseTilesComponent do
-
   use CashCrunchWeb, :live_component
 
   import SaladUI.Card
@@ -48,7 +47,9 @@ defmodule CashCrunchWeb.Components.ExpenseTilesComponent do
           <.card_description>
             Verfügbar
           </.card_description>
-          <% available = (relevant_sum_for_month(@expenses_in, @month_start, @month_end) - relevant_sum_for_month(@expenses_out, @month_start, @month_end)) %>
+          <% available =
+            relevant_sum_for_month(@expenses_in, @month_start, @month_end) -
+              relevant_sum_for_month(@expenses_out, @month_start, @month_end) %>
           <.card_title class="text-4xl" style={to_rgb(available)}>
             {available |> format()}
           </.card_title>
@@ -75,7 +76,7 @@ defmodule CashCrunchWeb.Components.ExpenseTilesComponent do
               relevant_sum_for_month(@expenses_in, @month_start, @month_end),
               relevant_sum_for_month(@expenses_out, @month_start, @month_end)
             ) %>
-          <.progress value={percentage} />
+          <.progress value={percentage} class="bg-green-300" />
         </.card_footer>
       </.card>
     </div>

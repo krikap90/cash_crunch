@@ -20,7 +20,6 @@ defmodule CashCrunchWeb.HomeLive do
   alias CashCrunchWeb.Components.ExpenseTilesComponent
   alias CashCrunchWeb.Components.ReferenceMonthComponent
 
-
   @impl true
   def mount(_params, _session, socket) do
     ref_dt = Timex.now()
@@ -148,15 +147,8 @@ defmodule CashCrunchWeb.HomeLive do
         </div>
 
         <div>
-          <.live_component
-            module={ReferenceMonthComponent}
-            id="reference_month"
-          />
-
-          <.live_component
-            module={AddFormComponent}
-            id="add_expense_form"
-          />
+          <.live_component module={ReferenceMonthComponent} id="reference_month" />
+          <.live_component module={AddFormComponent} id="add_expense_form" />
         </div>
       </main>
     </div>
@@ -175,8 +167,21 @@ defmodule CashCrunchWeb.HomeLive do
   end
 
   def handle_event("edit", data, socket) do
-    Repo.delete_by_name(data["name"])
-    save(data)
+    data = cleanup_keys(data)
+
+    Repo.update_expense(
+      %Expense{
+        id: parse_int(data["id"]),
+        name: data["name"],
+        type: data["type"],
+        value: parse_float(data["value"]),
+        datetime: parse_datetime(data["datetime"]),
+        expired_at: parse_datetime(data["expired_at"]),
+        repeats_every_type: parse_string(data["repeats_every_type"]),
+        repeats_every_value: parse_int(data["repeats_every_value"])
+      }
+      |> IO.inspect(label: "Edit data")
+    )
 
     {:noreply,
      socket
@@ -185,8 +190,8 @@ defmodule CashCrunchWeb.HomeLive do
      |> assign(:savings, Repo.get_by_type(:saving))}
   end
 
-  def handle_event("delete_expense", %{"name" => name}, socket) do
-    Repo.delete_by_name(name)
+  def handle_event("delete_expense", %{"id" => id}, socket) do
+    Repo.delete_by_id(id)
 
     {:noreply,
      socket
@@ -207,7 +212,7 @@ defmodule CashCrunchWeb.HomeLive do
      |> assign(:order_by, "value")}
   end
 
-  def handle_event("select-ref-dt", %{"datetime" => datetime}, socket) do
+  def handle_event("select-ref-dt", %{"ref_datetime" => datetime}, socket) do
     new_ref_dt = parse_datetime(datetime)
 
     month_start = new_ref_dt |> Timex.beginning_of_month() |> Timex.beginning_of_day()
@@ -220,20 +225,35 @@ defmodule CashCrunchWeb.HomeLive do
      |> assign(:ref_dt, new_ref_dt)}
   end
 
+  @impl true
+  def handle_info({:delete_expense, %{"id" => id}}, socket) do
+    # Delegiere an den bestehenden handle_event für delete_expense
+    handle_event("delete_expense", %{"id" => id}, socket)
+  end
+
   defp save(data) do
     repeats_every_value = parse_int(data["repeats_every_value"])
-    repeats_every_type = String.to_atom(data["repeats_every_type"])
+    repeats_every_type = data["repeats_every_type"]
     value = parse_float(data["value"])
 
-    %Expense{
+    %ESchema{
       name: data["name"],
-      type: String.to_atom(data["type"]),
+      type: data["type"],
       datetime: parse_datetime(data["datetime"]),
       value: value,
-      repeats_every: Keyword.put([], repeats_every_type, repeats_every_value),
+      repeats_every_type: repeats_every_type,
+      repeats_every_value: repeats_every_value,
       expired_at: parse_datetime(data["expired_at"])
     }
     |> ESchema.changeset()
     |> Repo.insert()
+  end
+
+  defp get_key(string) do
+    String.split(string, "-") |> Enum.at(0)
+  end
+
+  defp cleanup_keys(data) do
+    data |> Enum.map(fn {k, v} -> {get_key(k), v} end) |> Enum.into(%{})
   end
 end

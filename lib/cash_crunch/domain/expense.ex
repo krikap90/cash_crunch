@@ -4,31 +4,83 @@ defmodule CashCrunch.Domain.Expense do
   """
 
   @type t :: %__MODULE__{
+          id: integer() | nil,
           name: String.t() | nil,
-          type: :in | :out | :saving,
+          type: String.t(),
           value: float(),
           datetime: DateTime.t() | nil,
           expired_at: DateTime.t() | nil,
-          repeats_every: Keyword.t() | nil
+          repeats_every_type: String.t() | nil,
+          repeats_every_value: integer() | nil
         }
 
-  defstruct name: nil,
-            type: :out,
+  defstruct id: nil,
+            name: nil,
+            type: "out",
             value: 0,
             datetime: nil,
             expired_at: nil,
-            repeats_every: nil
+            repeats_every_type: nil,
+            repeats_every_value: nil
+
+  def is_relevant_for_timespan?(group_of_expenses, start_datetime, end_datetime)
+      when is_list(group_of_expenses) do
+    Enum.any?(group_of_expenses, fn expense ->
+      is_relevant_for_timespan?(expense, start_datetime, end_datetime)
+    end)
+  end
 
   def is_relevant_for_timespan?(expense = %__MODULE__{}, start_datetime, end_datetime) do
+    repeats_every = build_repeats_every(expense.repeats_every_type, expense.repeats_every_value)
+
     if expires?(expense) do
       if Timex.after?(expense.expired_at, start_datetime) do
-        projection(expense.datetime, expense.repeats_every, start_datetime, end_datetime)
+        projection(expense.datetime, repeats_every, start_datetime, end_datetime)
       else
         false
       end
     else
-      projection(expense.datetime, expense.repeats_every, start_datetime, end_datetime)
+      projection(expense.datetime, repeats_every, start_datetime, end_datetime)
     end
+  end
+
+  def add_relevance(group_of_expenses, start_datetime, end_datetime) do
+    Enum.map(group_of_expenses, fn expense ->
+      if is_relevant_for_timespan?(expense, start_datetime, end_datetime) do
+        Map.from_struct(expense) |> Map.put(:relevant, true)
+      else
+        Map.from_struct(expense) |> Map.put(:relevant, false)
+      end
+    end)
+  end
+
+  def relevant_repetition(expenses_with_relevance) do
+    Enum.find(expenses_with_relevance, fn %{relevant: relevance} -> relevance == true end)
+  end
+
+  def relevant_value(expenses_with_relevance) do
+    Enum.reduce(expenses_with_relevance, 0.0, fn exp, acc ->
+      if exp.relevant == true do
+        acc + exp.value
+      else
+        acc
+      end
+    end)
+  end
+
+  # Hilfsfunktion zum Erstellen von repeats_every aus den neuen Feldern
+  defp build_repeats_every(nil, _), do: nil
+  defp build_repeats_every("nil", _), do: nil
+  defp build_repeats_every(_, nil), do: nil
+
+  defp build_repeats_every(type_string, value)
+       when is_binary(type_string) and is_integer(value) do
+    type_atom = String.to_existing_atom(type_string)
+    [{type_atom, value}]
+  end
+
+  defp build_repeats_every(type_atom, value) when is_atom(type_atom) and is_integer(value) do
+    [{type_atom, value}]
   end
 
   def relevant_expenses_for_timespan(list_of_expenses, start_datetime, end_datetime) do

@@ -21,43 +21,21 @@ defmodule CashCrunch.Schema.Expense do
   end
 
   def to_struct(%__MODULE__{} = expense_record) do
-    type_as_atom = String.to_atom(expense_record.type)
-
-    repeats_every =
-      if expense_record.repeats_every_type do
-        repeats_every_type_as_atom = String.to_atom(expense_record.repeats_every_type)
-        Keyword.put([], repeats_every_type_as_atom, expense_record.repeats_every_value)
-      else
-        nil
-      end
-
     %ExpenseStruct{
+      id: expense_record.id,
       name: expense_record.name,
-      type: type_as_atom,
+      type: expense_record.type,
       value: expense_record.value,
       datetime: expense_record.datetime,
       expired_at: expense_record.expired_at,
-      repeats_every: repeats_every
+      repeats_every_type: expense_record.repeats_every_type,
+      repeats_every_value: expense_record.repeats_every_value
     }
   end
 
-  def changeset(%ExpenseStruct{} = expense, params \\ %{}) do
-    {t, v} = Enum.at(expense.repeats_every, 0)
-
-    merged_params =
-      Map.merge(
-        expense
-        |> Map.from_struct()
-        |> Map.update(:type, nil, fn type ->
-          to_string(type)
-        end)
-        |> Map.put(:repeats_every_type, to_string(t))
-        |> Map.put(:repeats_every_value, v),
-        params
-      )
-
-    %__MODULE__{}
-    |> cast(merged_params, [
+  def changeset(expense, params \\ %{}) do
+    expense
+    |> cast(params, [
       :name,
       :type,
       :value,

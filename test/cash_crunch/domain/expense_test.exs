@@ -7,10 +7,12 @@ defmodule CashCrunch.Domain.ExpenseTest do
     test "is_relevant_for_timespan?/3" do
       expense_with_expire_date = %Expense{
         name: "expense with expire_date",
+        type: "out",
         value: 50.0,
         datetime: ~U[2025-02-02 00:00:00.000Z],
         expired_at: ~U[2030-02-01 23:59:59.000Z],
-        repeats_every: [months: 1]
+        repeats_every_type: "months",
+        repeats_every_value: 1
       }
 
       assert Expense.is_relevant_for_timespan?(
@@ -45,10 +47,12 @@ defmodule CashCrunch.Domain.ExpenseTest do
 
       expense_without_expire_date = %Expense{
         name: "expense without expire_date",
+        type: "out",
         value: 50.0,
         datetime: ~U[2025-02-02 00:00:00.000Z],
         expired_at: nil,
-        repeats_every: [months: 1]
+        repeats_every_type: "months",
+        repeats_every_value: 1
       }
 
       assert Expense.is_relevant_for_timespan?(
@@ -86,24 +90,30 @@ defmodule CashCrunch.Domain.ExpenseTest do
       expenses = [
         %Expense{
           name: "expense 1",
+          type: "out",
           value: 50.0,
           datetime: ~U[2025-02-02 00:00:00.000Z],
           expired_at: ~U[2026-02-01 23:59:59.000Z],
-          repeats_every: [months: 1]
+          repeats_every_type: "months",
+          repeats_every_value: 1
         },
         %Expense{
           name: "expense 2",
+          type: "out",
           value: 150.0,
           datetime: ~U[2025-02-02 00:00:00.000Z],
           expired_at: ~U[2028-02-01 23:59:59.000Z],
-          repeats_every: [months: 1]
+          repeats_every_type: "months",
+          repeats_every_value: 1
         },
         %Expense{
           name: "expense 3",
+          type: "out",
           value: 13.5,
           datetime: ~U[2025-02-02 00:00:00.000Z],
           expired_at: ~U[2030-02-01 23:59:59.000Z],
-          repeats_every: [months: 1]
+          repeats_every_type: "months",
+          repeats_every_value: 1
         }
       ]
 
@@ -121,17 +131,21 @@ defmodule CashCrunch.Domain.ExpenseTest do
                [
                  %Expense{
                    name: "expense 2",
+                   type: "out",
                    value: 150.0,
                    datetime: ~U[2025-02-02 00:00:00.000Z],
                    expired_at: ~U[2028-02-01 23:59:59.000Z],
-                   repeats_every: [months: 1]
+                   repeats_every_type: "months",
+                   repeats_every_value: 1
                  },
                  %Expense{
                    name: "expense 3",
+                   type: "out",
                    value: 13.5,
                    datetime: ~U[2025-02-02 00:00:00.000Z],
                    expired_at: ~U[2030-02-01 23:59:59.000Z],
-                   repeats_every: [months: 1]
+                   repeats_every_type: "months",
+                   repeats_every_value: 1
                  }
                ]
 
@@ -143,10 +157,12 @@ defmodule CashCrunch.Domain.ExpenseTest do
                [
                  %Expense{
                    name: "expense 3",
+                   type: "out",
                    value: 13.5,
                    datetime: ~U[2025-02-02 00:00:00.000Z],
                    expired_at: ~U[2030-02-01 23:59:59.000Z],
-                   repeats_every: [months: 1]
+                   repeats_every_type: "months",
+                   repeats_every_value: 1
                  }
                ]
     end
@@ -155,24 +171,30 @@ defmodule CashCrunch.Domain.ExpenseTest do
       expenses = [
         %Expense{
           name: "expense 1",
+          type: "out",
           value: 50.0,
           datetime: ~U[2025-02-02 00:00:00.000Z],
           expired_at: ~U[2026-02-01 23:59:59.000Z],
-          repeats_every: [months: 1]
+          repeats_every_type: "months",
+          repeats_every_value: 1
         },
         %Expense{
           name: "expense 2",
+          type: "out",
           value: 150.0,
           datetime: ~U[2025-02-02 00:00:00.000Z],
           expired_at: ~U[2028-02-01 23:59:59.000Z],
-          repeats_every: [months: 1]
+          repeats_every_type: "months",
+          repeats_every_value: 1
         },
         %Expense{
           name: "expense 3",
+          type: "out",
           value: 13.5,
           datetime: ~U[2025-02-02 00:00:00.000Z],
           expired_at: ~U[2030-02-01 23:59:59.000Z],
-          repeats_every: [months: 1]
+          repeats_every_type: "months",
+          repeats_every_value: 1
         }
       ]
 
